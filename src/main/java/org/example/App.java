@@ -204,7 +204,7 @@ public class App
                     break;
 
                 case 6:
-                    System.out.print("Enter status for filter task : ");
+                    System.out.print("Enter status for filtering task : ");
                     String inputStatus = sc.nextLine();
                     try {
                         TaskStatus filterStatus = TaskStatus.valueOf(inputStatus.toUpperCase());
@@ -232,6 +232,7 @@ public class App
                     break;
 
                 case 7:
+                    System.out.println("Enter Priority level for filtering task");
                     break;
 
                 case 8:
