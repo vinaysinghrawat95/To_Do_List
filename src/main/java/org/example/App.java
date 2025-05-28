@@ -57,7 +57,7 @@ public class App
 
                     TaskStatus status = null;
                     while(status == null) {
-                        System.out.print("Enter task status ( PENDING, IN_PROGRESS, COMPLETED ) : ");
+                        System.out.print("Enter task status ( PENDING, ON_PROGRESS, COMPLETED ) : ");
                         String inputStatus = sc.nextLine();
                         try {
                              status = TaskStatus.valueOf(inputStatus.toUpperCase());
@@ -162,7 +162,7 @@ public class App
 
                         TaskStatus updateStatus = null;
                         while(updateStatus == null) {
-                            System.out.print("Enter new status ( PENDING, IN_PROGRESS, COMPLETED ) : ");
+                            System.out.print("Enter new status ( PENDING, ON_PROGRESS, COMPLETED ) : ");
                             String inputStatus = sc.nextLine();
                             try {
                                 updateStatus = TaskStatus.valueOf(inputStatus.toUpperCase());
@@ -208,22 +208,22 @@ public class App
                     String inputStatus = sc.nextLine();
                     try {
                         TaskStatus filterStatus = TaskStatus.valueOf(inputStatus.toUpperCase());
-                        List<Task> filteredTasks = taskDAO.getTaskByStatus(filterStatus);
+                        List<Task> filteredStatusTasks = taskDAO.getTaskByStatus(filterStatus);
 
-                        if (filteredTasks == null) {
-                            System.out.println("Task not found");
+                        if (filteredStatusTasks.isEmpty()) {
+                            System.out.println("Task not found...");
                         } else {
                             System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
                                     "ID", "Title", "Description", "Due Date", "Status", "Priority");
                             System.out.println("-----------------------------------------------------------------------------------------------");
-                            for (Task getTask : filteredTasks) {
+                            for (Task getStatusTask : filteredStatusTasks) {
                                 System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
-                                        getTask.getId(),
-                                        getTask.getTitle(),
-                                        getTask.getDescription().length() > 37 ? getTask.getDescription().substring(0, 37) + "..." : getTask.getDescription(),
-                                        getTask.getDueDate(),
-                                        getTask.getStatus(),
-                                        getTask.getPriority());
+                                        getStatusTask.getId(),
+                                        getStatusTask.getTitle(),
+                                        getStatusTask.getDescription().length() > 37 ? getStatusTask.getDescription().substring(0, 37) + "..." : getStatusTask.getDescription(),
+                                        getStatusTask.getDueDate(),
+                                        getStatusTask.getStatus(),
+                                        getStatusTask.getPriority());
                             }
                         }
                     } catch (Exception e) {
@@ -232,10 +232,69 @@ public class App
                     break;
 
                 case 7:
-                    System.out.println("Enter Priority level for filtering task");
+                    System.out.print("Enter Priority level for filtering task : ");
+                    String inputPriority = sc.nextLine();
+
+                    try{
+                        PriorityLevel filterPriority = PriorityLevel.valueOf(inputPriority.toUpperCase());
+                        List<Task> filteredPriorityTask = taskDAO.getTaskByPriority(filterPriority);
+
+                        if (filteredPriorityTask.isEmpty())
+                        {
+                            System.out.println("Task not found...");
+                        }else
+                        {
+                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
+                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
+                            System.out.println("-----------------------------------------------------------------------------------------------");
+                            for (Task getPriorityTask : filteredPriorityTask) {
+                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                                        getPriorityTask.getId(),
+                                        getPriorityTask.getTitle(),
+                                        getPriorityTask.getDescription().length() > 37 ? getPriorityTask.getDescription().substring(0, 37) + "..." : getPriorityTask.getDescription(),
+                                        getPriorityTask.getDueDate(),
+                                        getPriorityTask.getStatus(),
+                                        getPriorityTask.getPriority());
+                            }
+                        }
+
+                    }catch(Exception e) {
+                        System.out.println("Invalid Priority! Please try again...");
+                    }
                     break;
 
                 case 8:
+                    System.out.print("Enter status for filtering ( PENDING, ON_PROGRESS, COMPLETED ) : ");
+                    String filteringInputStatus = sc.nextLine();
+                    System.out.print("Enter priority for filtering ( LOW, MEDIUM, HIGH ) : ");
+                    String filteringInputPriority = sc.nextLine();
+
+                    try{
+                        TaskStatus filteringStatus =  TaskStatus.valueOf(filteringInputStatus.toUpperCase());
+                        PriorityLevel filteringPriority =  PriorityLevel.valueOf(filteringInputPriority.toUpperCase());
+                        List<Task> filteredTasksByStatusAndPriority = taskDAO.getTaskByStatusAndPriority(filteringStatus, filteringPriority);
+
+                        if(filteredTasksByStatusAndPriority.isEmpty())
+                        {
+                            System.out.println("Task not found...");
+                        }else {
+                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
+                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
+                            System.out.println("-----------------------------------------------------------------------------------------------");
+                            for (Task getFilteredTask : filteredTasksByStatusAndPriority) {
+                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                                        getFilteredTask.getId(),
+                                        getFilteredTask.getTitle(),
+                                        getFilteredTask.getDescription().length() > 37 ? getFilteredTask.getDescription().substring(0, 37) + "..." : getFilteredTask.getDescription(),
+                                        getFilteredTask.getDueDate(),
+                                        getFilteredTask.getStatus(),
+                                        getFilteredTask.getPriority());
+                            }
+                        }
+                    }catch (Exception e)
+                    {
+                        System.out.println("Invalid status and priority! Please try again...");
+                    }
                     break;
 
                 case 9:
