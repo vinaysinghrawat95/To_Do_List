@@ -53,6 +53,7 @@ public class TaskDAO
             tx.commit();
             System.out.println("Task update successfully");
         } catch (Exception e) {
+            System.out.println("Task not update!");
             if(tx != null) tx.rollback();
             e.printStackTrace();
         }

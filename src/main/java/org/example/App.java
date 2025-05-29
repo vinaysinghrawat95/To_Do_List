@@ -2,6 +2,7 @@ package org.example;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class App
         {
             Task task = new Task();
 
+            System.out.println("\n");
             System.out.println(" \t \t \t \t Task Operations");
             System.out.println("=======================================================");
             System.out.println("1. Add new task" +
@@ -84,25 +86,24 @@ public class App
 
                 case 2:
                     List<Task> allTasks = taskDAO.getAllTasks();
-                    if(allTasks == null)
-                    {
+                    if (allTasks == null || allTasks.isEmpty()) {
                         System.out.println("Tasks not found");
-                    }
-                    else {
-                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
-                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
-                            System.out.println("-----------------------------------------------------------------------------------------------");
+                    } else {
+                        System.out.printf("%-5s %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                "ID", "Title", "Description", "Due Date", "Created Time", "Status", "Priority");
+                        System.out.println("--------------------------------------------------------------------------------------------------------------------------");
 
-                            for (Task t : allTasks) {
-                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
-                                        t.getId(),
-                                        t.getTitle(),
-                                        t.getDescription().length() > 37 ? t.getDescription().substring(0, 37) + "..." : t.getDescription(),
-                                        t.getDueDate(),
-                                        t.getStatus(),
-                                        t.getPriority());
-                            }
+                        for (Task t : allTasks) {
+                            System.out.printf("%-5d %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                    t.getId(),
+                                    t.getTitle(),
+                                    t.getDescription().length() > 37 ? t.getDescription().substring(0, 37) + "..." : t.getDescription(),
+                                    t.getDueDate(),
+                                    t.getCreatedTime(),
+                                    t.getStatus(),
+                                    t.getPriority());
                         }
+                    }
                     break;
 
                 case 3:
@@ -116,14 +117,15 @@ public class App
                         System.out.println("Task not found");
                     }
                     else{
-                        System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
-                                "ID", "Title", "Description", "Due Date", "Status", "Priority");
-                        System.out.println("-----------------------------------------------------------------------------------------------");
-                        System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                        System.out.printf("%-5s %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                "ID", "Title", "Description", "Due Date", "Created Time", "Status", "Priority");
+                        System.out.println("--------------------------------------------------------------------------------------------------------------------------");
+                        System.out.printf("%-5d %-20s %-40s %-12s %-20s %-15s %-15s\n",
                                 task1.getId(),
                                 task1.getTitle(),
                                 task1.getDescription().length() > 37 ? task1.getDescription().substring(0, 37) + "..." : task1.getDescription(),
                                 task1.getDueDate(),
+                                task1.getCreatedTime(),
                                 task1.getStatus(),
                                 task1.getPriority());
                     }
@@ -149,15 +151,15 @@ public class App
                         if(!updateDesc.isEmpty()) taskToUpdate.setDescription(updateDesc);
 
                         LocalDate updateDate = null;
-                        while(updateDate == null) {
-                            System.out.print("Enter new dueDate (yyyy-MM-dd) : ");
+                            System.out.print("Enter new dueDate (yyyy-MM-dd) ( Leave blank to keep unchanged ) : ");
                             String inputDate = sc.nextLine();
-                            try {
-                                updateDate = LocalDate.parse(inputDate);
-                                taskToUpdate.setDueDate(updateDate);
-                            } catch (Exception e) {
-                                System.out.println("Invalid input, check your date format..");
-                            }
+                            if(!inputDate.isEmpty()) {
+                                try {
+                                    updateDate = LocalDate.parse(inputDate);
+                                    taskToUpdate.setDueDate(updateDate);
+                                } catch (Exception e) {
+                                    System.out.println("Invalid input, check your date format..");
+                                }
                         }
 
                         TaskStatus updateStatus = null;
@@ -188,6 +190,7 @@ public class App
                             }
                         }
                     }
+                    taskDAO.updateTask(taskToUpdate);
                     break;
 
                 case 5:
@@ -213,18 +216,21 @@ public class App
                         if (filteredStatusTasks.isEmpty()) {
                             System.out.println("Task not found...");
                         } else {
-                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
-                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
-                            System.out.println("-----------------------------------------------------------------------------------------------");
+                            System.out.printf("%-5s %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                    "ID", "Title", "Description", "Due Date", "Created Time", "Status", "Priority");
+                            System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+
                             for (Task getStatusTask : filteredStatusTasks) {
-                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                                System.out.printf("%-5d %-20s %-40s %-12s %-20s %-15s %-15s\n",
                                         getStatusTask.getId(),
                                         getStatusTask.getTitle(),
                                         getStatusTask.getDescription().length() > 37 ? getStatusTask.getDescription().substring(0, 37) + "..." : getStatusTask.getDescription(),
                                         getStatusTask.getDueDate(),
+                                        getStatusTask.getCreatedTime(),
                                         getStatusTask.getStatus(),
                                         getStatusTask.getPriority());
                             }
+
                         }
                     } catch (Exception e) {
                         System.out.println("Invalid status! Please try again...");
@@ -244,15 +250,17 @@ public class App
                             System.out.println("Task not found...");
                         }else
                         {
-                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
-                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
-                            System.out.println("-----------------------------------------------------------------------------------------------");
+                            System.out.printf("%-5s %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                    "ID", "Title", "Description", "Due Date", "Created Time", "Status", "Priority");
+                            System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+
                             for (Task getPriorityTask : filteredPriorityTask) {
-                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                                System.out.printf("%-5d %-20s %-40s %-12s %-20s %-15s %-15s\n",
                                         getPriorityTask.getId(),
                                         getPriorityTask.getTitle(),
                                         getPriorityTask.getDescription().length() > 37 ? getPriorityTask.getDescription().substring(0, 37) + "..." : getPriorityTask.getDescription(),
                                         getPriorityTask.getDueDate(),
+                                        getPriorityTask.getCreatedTime(),
                                         getPriorityTask.getStatus(),
                                         getPriorityTask.getPriority());
                             }
@@ -278,18 +286,20 @@ public class App
                         {
                             System.out.println("Task not found...");
                         }else {
-                            System.out.printf("%-5s %-20s %-40s %-12s %-15s %-15s\n",
-                                    "ID", "Title", "Description", "Due Date", "Status", "Priority");
-                            System.out.println("-----------------------------------------------------------------------------------------------");
+                            System.out.printf("%-5s %-20s %-40s %-12s %-20s %-15s %-15s\n",
+                                    "ID", "Title", "Description", "Due Date", "Created Time", "Status", "Priority");
+                            System.out.println("-------------------------------------------------------------------------------------------------------------------------");
+
                             for (Task getFilteredTask : filteredTasksByStatusAndPriority) {
-                                System.out.printf("%-5d %-20s %-40s %-12s %-15s %-15s\n",
+                                System.out.printf("%-5d %-20s %-40s %-12s %-20s %-15s %-15s\n",
                                         getFilteredTask.getId(),
                                         getFilteredTask.getTitle(),
                                         getFilteredTask.getDescription().length() > 37 ? getFilteredTask.getDescription().substring(0, 37) + "..." : getFilteredTask.getDescription(),
                                         getFilteredTask.getDueDate(),
+                                        getFilteredTask.getCreatedTime(),
                                         getFilteredTask.getStatus(),
                                         getFilteredTask.getPriority());
-                            }
+                        }
                         }
                     }catch (Exception e)
                     {

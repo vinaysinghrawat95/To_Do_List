@@ -1,13 +1,16 @@
 package org.example;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "Task")
 public class Task {
-    public Task(){}
+    public Task(){this.createdTime = LocalTime.now();}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +33,10 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 50, nullable = false)
     private TaskStatus status;
+
+    @Column(name = "created_time", updatable = false)
+    @CreationTimestamp
+    private  LocalTime createdTime;
 
 
     public long getId() {
@@ -80,6 +87,14 @@ public class Task {
         return status;
     }
 
+    public LocalTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalTime createdTime)
+    {
+        this.createdTime = createdTime;
+    }
 
 
 }
